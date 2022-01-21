@@ -253,3 +253,72 @@ class Scrapper:
                 scorecard[table_headings[0]] = table_data
             scorecards.append(scorecard)
         print(scorecards)
+
+    async def get_squads(self):
+        await self.init_scrapper()
+        page = self.page
+        await page.goto(
+            "https://www.news18.com/cricketnext/cricket-live-scorecard/team-squads/england-under-19-vs-united-arab-emirates-under-19-enuuau01202022207900.html",
+            waitUntil="domcontentloaded",
+        )
+        await page.waitForSelector(".playername")
+
+        squads = []
+
+        squad_els = await page.querySelectorAll(".live-scorecard-box")
+        for squad_el in squad_els:
+            team_name = await page.evaluate(
+                "element => element.textContent",
+                await squad_el.querySelector(".team_name"),
+            )
+            players = []
+            squad_player_els = await squad_el.querySelectorAll("ul li")
+
+            for squad_player_el in squad_player_els:
+                profile_url = await page.evaluate(
+                    "element => element.getAttribute('href')",
+                    await squad_player_el.querySelector("a"),
+                )
+                img = await page.evaluate(
+                    "element => element.getAttribute('src')",
+                    await squad_player_el.querySelector("a .img img"),
+                )
+                player_name_str = await page.evaluate(
+                    "element => element.textContent",
+                    await squad_player_el.querySelector(".player_info .playername"),
+                )
+                player_live_btn = ""
+                try:
+                    player_live_btn = await page.evaluate(
+                        "element => element.textContent",
+                        await squad_player_el.querySelector(
+                            ".player_info .playername .livebtn"
+                        ),
+                    )
+                except:
+                    player_live_btn = ""
+
+                player_name = player_name_str.replace(player_live_btn, "").strip()
+                role = await page.evaluate(
+                    "element => element.textContent",
+                    await squad_player_el.querySelector(".player_info .playstatus"),
+                )
+                first_eleven = player_live_btn == "*"
+                players.append(
+                    {
+                        "name": player_name,
+                        "img": img,
+                        "profile_url": profile_url,
+                        "role": role,
+                        "first_eleven": first_eleven,
+                    }
+                )
+
+            squads.append(
+                {
+                    "team_name": team_name,
+                    "squad": players,
+                }
+            )
+
+        print(squads)

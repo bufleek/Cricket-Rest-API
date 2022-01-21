@@ -10,4 +10,4 @@ class MainConfig(AppConfig):
         import asyncio
 
         scrapper = Scrapper()
-        asyncio.run(scrapper.get_full_scorecard())
+        asyncio.run(scrapper.get_squads())
