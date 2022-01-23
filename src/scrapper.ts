@@ -58,37 +58,37 @@ export default class Scrapper {
             (node) => node.textContent
           );
           let team = {
-            name: await team_el.$eval(
-              ".series_name",
-              (node) => node.textContent
-            ),
-            image_url: await team_el.$eval(".flag_icons_result img", (node) =>
-              node.getAttribute("src")
-            ),
-            score: score?.replace("" + overs, ""),
-            overs: overs?.replace("(", "").replace(" OVR)", "").trim(),
+            name: (
+              await team_el.$eval(".series_name", (node) => node.textContent)
+            )?.trim(),
+            image_url: (
+              await team_el.$eval(".flag_icons_result img", (node) =>
+                node.getAttribute("src")
+              )
+            )?.trim(),
+            score: score?.replace("" + overs, "")?.trim(),
+            overs: overs?.replace("(", "").replace("OVR)", "").trim(),
           };
           teams.push(team);
         }
         fixtures.push({
           status: "Concluded",
-          status_note: await fixture_el.$eval(
-            ".run_info",
-            (node) => node.textContent
-          ),
+          status_note: (
+            await fixture_el.$eval(".run_info", (node) => node.textContent)
+          )?.trim(),
           date: date?.trim(),
-          venue: info?.replace(date + ". ", "") || null,
+          venue: (info?.replace(date + ". ", "") || null)?.trim(),
           teams,
         });
       }
       series.push({
-        title: await schedule.$eval(
-          ".schedule-date",
-          (node) => node.textContent
-        ),
+        title: (
+          await schedule.$eval(".schedule-date", (node) => node.textContent)
+        )?.trim(),
         fixtures,
       });
     }
     console.log(series);
+    await page.close();
   }
 }
