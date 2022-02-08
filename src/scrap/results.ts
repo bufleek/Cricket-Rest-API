@@ -53,6 +53,16 @@ export default class Results {
               };
               teams.push(team);
             }
+            let urls = await fixture_el.$$eval(
+              ".series_result_right ul li a",
+              (nodes) => nodes.map((node) => node.getAttribute("href"))
+            );
+            console.log(urls[0]);
+            let scorecard =
+              urls[0] != null
+                ? await new Scorecard().getScorecard(urls[0])
+                : null;
+
             fixtures.push({
               status: "CONCLUDED",
               status_note: (
@@ -61,6 +71,7 @@ export default class Results {
               date: date?.trim(),
               venue: (info?.replace(date + ". ", "") || null)?.trim(),
               teams,
+              scorecard,
             });
           }
           series.push({
@@ -73,7 +84,7 @@ export default class Results {
         console.log(series);
         await page.close();
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         await page.close();
         await run();
       }

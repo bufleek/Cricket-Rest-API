@@ -16,7 +16,7 @@ export default class Scrapper {
 
   public async initializeScrapper() {
     if (Scrapper.browser == null) {
-      Scrapper.browser = await puppeteer.launch({ headless: true });
+      Scrapper.browser = await puppeteer.launch({ headless: false });
     }
   }
 }
