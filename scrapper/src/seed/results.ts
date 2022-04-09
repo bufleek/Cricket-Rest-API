@@ -1,5 +1,8 @@
 import fs from "fs";
-import { InsertResults } from "./../api";
+import { insertSeries } from "./../api";
 
 let data = fs.readFileSync("./data/results.json", "utf-8");
-InsertResults(data);
+insertSeries(data).then(() => {
+  data = fs.readFileSync("./data/scheduled.json", "utf-8");
+  insertSeries(data);
+});

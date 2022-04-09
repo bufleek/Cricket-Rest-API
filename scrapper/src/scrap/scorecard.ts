@@ -1,14 +1,19 @@
-import Scrapper from "../scrapper";
+import { Page } from "puppeteer";
 import DynamicObject from "../dynamic_object";
+import Scrapper from "../scrapper";
 
 export default class ScoreCard {
   private scrapper = Scrapper.getInstance();
 
-  public async getScorecard(url: string): Promise<any> {
+  public async getScorecard(
+    url: string,
+    scorecardPage: Page | null
+  ): Promise<any> {
     return new Promise<any>(async (resolve, reject) => {
       const run = async () => {
         await this.scrapper.initializeScrapper();
-        let page = await Scrapper.browser.newPage();
+        let page = scorecardPage || (await Scrapper.browser.newPage());
+
         try {
           await page.goto(url);
           await page.waitForSelector(".scoreCard-main");
@@ -150,7 +155,6 @@ export default class ScoreCard {
             status_note,
             scoreboards,
           };
-          //   console.log(full_scoreboard);
           await page.close();
           resolve(full_scoreboard);
         } catch (error) {

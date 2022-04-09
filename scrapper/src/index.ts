@@ -1,6 +1,6 @@
 import bodyParser from "body-parser";
 import express from "express";
-import Results from "./scrap/results";
+import Scrapper from "./scrapper";
 
 const app = express();
 app.use(bodyParser.json());
@@ -8,8 +8,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port = 3000;
 
 const main = async () => {
-  const results = new Results();
-  results.getResults();
+  const scrapper = Scrapper.getInstance();
+  scrapper.initializeScrapper();
+  // // const scheduled = new Scheduled();
+  // scheduled.getSchedule();
 };
 
 main().finally(() => {

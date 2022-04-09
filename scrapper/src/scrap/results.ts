@@ -27,7 +27,11 @@ export default class Results {
               ".schedule-info",
               (node) => node.textContent
             );
-            let date = info?.split(".", 1)[0];
+            let dateStr = info?.split(".", 1)[0];
+            let date = (() => {
+              let dateUTC = dateStr ? new Date(dateStr.trim()) : null;
+              return dateUTC;
+            })();
             let teams = [];
             let teams_els = await fixture_el.$$(".result_flag_row");
             for (let k = 0; k < teams_els.length; k++) {
@@ -47,7 +51,7 @@ export default class Results {
                     (node) => node.textContent
                   )
                 )?.trim(),
-                image_url: (
+                logo_url: (
                   await team_el.$eval(".flag_icons_result img", (node) =>
                     node.getAttribute("src")
                   )
@@ -65,14 +69,14 @@ export default class Results {
             //   urls[0] != null
             //     ? await new Scorecard().getScorecard(urls[0])
             //     : null;
-
+            let venue = (info?.replace(`${dateStr}. `, "") || null)?.trim();
             fixtures.push({
               status: 2,
               status_note: (
                 await fixture_el.$eval(".run_info", (node) => node.textContent)
               )?.trim(),
-              date: date?.trim(),
-              venue: (info?.replace(`${date}. `, "") || null)?.trim(),
+              date,
+              venue,
               teams,
               scorecard_url: urls[0],
               commentary_url: urls[1],
