@@ -4,13 +4,17 @@ from .views import (
     BulkCreate,
     FixtureDetailView,
     FixtureListApiView,
+    InningListView,
     PlayerDetailView,
     PlayerListApiView,
+    ScorecardDetailView,
     ScoreListApiView,
+    ScrapperLiveFixtureList,
     SeriesDetailView,
     SeriesListApiView,
     TeamDetailView,
     TeamListApiView,
+    UpdateLiveView,
     VenueListApiView,
 )
 
@@ -26,4 +30,7 @@ urlpatterns = [
     path("players/<int:pk>", PlayerDetailView.as_view()),
     path("venues/", VenueListApiView.as_view()),
     path("scores/", ScoreListApiView.as_view()),
+    path("scorecard/<int:fixture>", ScorecardDetailView.as_view()),
+    path("scrapper/get-live/", ScrapperLiveFixtureList.as_view()),
+    path("scrapper/update-live/", UpdateLiveView.as_view()),
 ]

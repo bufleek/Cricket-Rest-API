@@ -51,7 +51,7 @@ export default class Scrapper {
               liveFixtures.length != rawLiveFixtures.length
             ) {
               liveFixtures = await getFixtures(series)
-                .then(({ data }) => data)
+                .then((data) => data)
                 .catch(({ response }) => {
                   console.log("error ", response.data);
                 });
@@ -74,7 +74,6 @@ export default class Scrapper {
                 pages.push(fixturePage);
               }
             }
-            // console.log(liveFixtures);
 
             await Promise.all(
               pages.map(

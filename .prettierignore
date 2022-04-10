@@ -1,0 +1,5 @@
+# Remove prettier formatting for python files
+
+# Ensure black is installed to replace prettier
+
+*.py

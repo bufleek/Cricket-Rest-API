@@ -1,5 +1,6 @@
 import fs from "fs";
 import { Page } from "puppeteer";
+import { updateLive } from "../api";
 import Scrapper from "../scrapper";
 import { Batting, Bowling, Fixture, Inning, Score } from "../types";
 import ScoreCard from "./scorecard";
@@ -100,7 +101,7 @@ class Live {
                             return {
                               score:
                                 split_score && split_score[0]
-                                  ? split_score[0].split("/")[0]?.trim()
+                                  ? split_score[0]
                                   : null,
                               overs:
                                 split_score && split_score[1]
@@ -296,6 +297,10 @@ class Live {
                     )
                       ?.replace(score || "", "")
                       ?.trim();
+                    let inning_title = await accordion.$eval(
+                      ".inning_row .inning",
+                      (node) => node.textContent
+                    );
 
                     const team =
                       _fixture.team_a.name === teamName
@@ -356,12 +361,12 @@ class Live {
                                 bowling.push({
                                   bowler: playerName || "",
                                   overs: tds[1]?.trim() || "",
-                                  maiden: tds[2]?.trim() || "",
+                                  maidens: tds[2]?.trim() || "",
                                   runs: tds[3]?.trim() || "",
                                   wickets: tds[4]?.trim() || "",
                                   wides: tds[5]?.trim() || "",
-                                  noballs: tds[6]?.trim() || "",
-                                  econ: tds[7]?.trim() || "",
+                                  no_balls: tds[6]?.trim() || "",
+                                  econs: tds[7]?.trim() || "",
                                   active: await tr.evaluate((node) =>
                                     node.classList.contains("active")
                                   ),
@@ -381,6 +386,7 @@ class Live {
                       fall_of_wickets: fall_of_wickets || "",
                       fixture: _fixture.id,
                       team: team.id,
+                      inning: inning_title || "",
                     };
                     resolve(inning);
                   })
@@ -388,6 +394,9 @@ class Live {
             );
 
             const data = await Promise.all([scoresPromise, inningsPromise]);
+
+            matchEnded = status.trim().toLocaleUpperCase() === "CONCLUDED";
+
             const fixture: Fixture = {
               id: _fixture.id,
               status,
@@ -399,13 +408,11 @@ class Live {
               scores: data[0],
               venue: _fixture.venue.id,
               innings: data[1],
+              featured: !matchEnded,
             };
 
-            // console.log(fixture);
-            insertScorecard(fixture, fixture.id);
-            matchEnded = status.trim().toLocaleUpperCase() === "CONCLUDED";
-            console.log("status ", status);
-            console.log("match ended ", matchEnded);
+            await updateLive(fixture);
+
             if (Date.now() - scrapStartTime < 600000 && !matchEnded) {
               await new Promise((resolve, _) => {
                 setTimeout(() => {
@@ -413,26 +420,22 @@ class Live {
                 }, 10000);
               });
               await scrap();
+            } else if (matchEnded) {
+              await page.close();
             }
           };
 
-          console.log("Concluded ", matchEnded);
-          if (matchEnded) {
-            await page.close();
-            console.log("CONCLUDED ----");
-            resolve_scorecard(_fixture);
-          } else {
-            console.log("not concluded - ", matchEnded, "\n\n");
+          if (status.trim().toLocaleUpperCase() !== "CONCLUDED") {
             await scrap();
+            await run();
           }
-          console.log("complete scrap round");
-          await run();
         } catch (err) {
           console.log(err);
           await run();
         }
       };
       await run();
+      resolve_scorecard(_fixture);
     });
   }
 }

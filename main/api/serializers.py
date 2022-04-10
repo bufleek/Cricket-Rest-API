@@ -1,9 +1,13 @@
+import json
+from dataclasses import fields
+
 from django.forms.models import model_to_dict
 from main.models import (
     Batting,
     Bowling,
     FallOfWicket,
     Fixture,
+    Inning,
     Player,
     Score,
     Series,
@@ -76,6 +80,12 @@ class VenueSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
 
+class ScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Score
+        fields = "__all__"
+
+
 class FixtureSerializer(serializers.ModelSerializer):
     team_a = TeamSerializer()
     team_b = TeamSerializer()
@@ -84,13 +94,26 @@ class FixtureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Fixture
-        fields = "__all__"
+        exclude = (
+            "commentary_url",
+            "squads_url",
+            "start_time",
+            "end_time",
+        )
 
-
-class ScoreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Score
-        fields = "__all__"
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        team_a_score = Score.objects.filter(
+            fixture=instance, team=instance.team_a
+        ).first()
+        team_b_score = Score.objects.filter(
+            fixture=instance, team=instance.team_b
+        ).first()
+        if not team_a_score is None:
+            representation["team_a"]["score"] = model_to_dict(team_a_score)
+        if not team_b_score is None:
+            representation["team_b"]["score"] = model_to_dict(team_b_score)
+        return representation
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -120,4 +143,20 @@ class BowlingSerializer(serializers.ModelSerializer):
 class FallOfWicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = FallOfWicket
+        fields = "__all__"
+
+
+class InningSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        scores = []
+        for score in Score.objects.filter(fixture=instance.fixture).all():
+            scores.append(model_to_dict(score))
+        representation["batting"] = json.loads(representation.get("batting"))
+        representation["bowling"] = json.loads(representation.get("bowling"))
+        representation["scores"] = scores
+        return representation
+
+    class Meta:
+        model = Inning
         fields = "__all__"

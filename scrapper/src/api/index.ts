@@ -10,13 +10,18 @@ const api = axios.create({
 export async function insertSeries(data: any) {
   const rawSeriesData: any[] = JSON.parse(data);
 
-  return api.post("series-bulk/", rawSeriesData).catch((a) => {
-    console.log(a.response.data);
-  });
+  return api.post("series-bulk/", rawSeriesData).catch((_) => {});
 }
 
 export async function getFixtures(params: any) {
-  return api.get("scrapper/get-live/", { data: params });
+  return api
+    .get("scrapper/get-live/", { data: params })
+    .then(({ data }) => data)
+    .catch((_) => {});
+}
+
+export async function updateLive(params: any) {
+  return api.post("scrapper/update-live/", { data: params }).catch((_) => {});
 }
 
 export default api;

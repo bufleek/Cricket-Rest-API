@@ -1,0 +1,250 @@
+{
+  "id": 3,
+  "status": "PLAY IN PROGRESS",
+  "status_note": "Toss won by Royal Challengers Bangalore (decided to bowl)",
+  "date": "2001-04-09T16:30:00Z",
+  "series": 3,
+  "team_a": 5,
+  "team_b": 6,
+  "scores": [
+    {
+      "full_score": "101/6 (16.3)",
+      "score": "101/6",
+      "overs": "(16.3)",
+      "runrate": "6.12",
+      "team": 6,
+      "fixture": 3
+    },
+    {
+      "full_score": "",
+      "score": "",
+      "overs": null,
+      "runrate": "",
+      "team": 5,
+      "fixture": 3
+    }
+  ],
+  "venue": 3,
+  "innings": [
+    {
+      "id": null,
+      "batting": [
+        {
+          "batsman": "Ishan Kishan (W)",
+          "runs": "26",
+          "balls": "28",
+          "fours": "3",
+          "sixes": "0",
+          "strike_rate": "92.85",
+          "out": "c mohammed siraj b akash deep",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Rohit Sharma (C)",
+          "runs": "26",
+          "balls": "15",
+          "fours": "4",
+          "sixes": "1",
+          "strike_rate": "173.33",
+          "out": "c & b harshal patel",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Dewald Brevis",
+          "runs": "8",
+          "balls": "11",
+          "fours": "1",
+          "sixes": "0",
+          "strike_rate": "72.72",
+          "out": "lbw b wanindu hasaranga",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Suryakumar Yadav*",
+          "runs": "29",
+          "balls": "22",
+          "fours": "4",
+          "sixes": "1",
+          "strike_rate": "131.81",
+          "out": "batting",
+          "active": true,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Tilak Varma",
+          "runs": "0",
+          "balls": "3",
+          "fours": "0",
+          "sixes": "0",
+          "strike_rate": "0",
+          "out": "run out (glenn maxwell)",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Kieron Pollard",
+          "runs": "0",
+          "balls": "1",
+          "fours": "0",
+          "sixes": "0",
+          "strike_rate": "0",
+          "out": "lbw b wanindu hasaranga",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Ramandeep Singh",
+          "runs": "6",
+          "balls": "12",
+          "fours": "0",
+          "sixes": "0",
+          "strike_rate": "50",
+          "out": "c dinesh karthik b harshal patel",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Jaydev Unadkat",
+          "runs": "5",
+          "balls": "7",
+          "fours": "0",
+          "sixes": "0",
+          "strike_rate": "71.42",
+          "out": "batting",
+          "active": true,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Murugan Ashwin",
+          "runs": "",
+          "balls": "",
+          "fours": "",
+          "sixes": "",
+          "strike_rate": "",
+          "out": "",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Jasprit Bumrah",
+          "runs": "",
+          "balls": "",
+          "fours": "",
+          "sixes": "",
+          "strike_rate": "",
+          "out": "",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "batsman": "Basil Thampi",
+          "runs": "",
+          "balls": "",
+          "fours": "",
+          "sixes": "",
+          "strike_rate": "",
+          "out": "",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        }
+      ],
+      "bowling": [
+        {
+          "bowler": "David Willey",
+          "overs": "2",
+          "maidens": "0",
+          "runs": "8",
+          "wickets": "0",
+          "wides": "0",
+          "no_balls": "0",
+          "econs": "4",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "bowler": "Mohammed Siraj",
+          "overs": "3",
+          "maidens": "0",
+          "runs": "28",
+          "wickets": "0",
+          "wides": "1",
+          "no_balls": "0",
+          "econs": "9.33",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "bowler": "Wanindu Hasaranga*",
+          "overs": "3.3",
+          "maidens": "0",
+          "runs": "21",
+          "wickets": "2",
+          "wides": "0",
+          "no_balls": "0",
+          "econs": "6",
+          "active": true,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "bowler": "Akash Deep",
+          "overs": "4",
+          "maidens": "1",
+          "runs": "20",
+          "wickets": "1",
+          "wides": "0",
+          "no_balls": "0",
+          "econs": "5",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "bowler": "Harshal Patel",
+          "overs": "2",
+          "maidens": "0",
+          "runs": "5",
+          "wickets": "2",
+          "wides": "0",
+          "no_balls": "0",
+          "econs": "2.5",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        },
+        {
+          "bowler": "Shahbaz Ahmed",
+          "overs": "2",
+          "maidens": "0",
+          "runs": "19",
+          "wickets": "0",
+          "wides": "0",
+          "no_balls": "0",
+          "econs": "9.5",
+          "active": false,
+          "team": 6,
+          "fixture": 3
+        }
+      ],
+      "fall_of_wickets": "Fall of Wickets1-50 (Rohit Sharma,  6.2 ov), 2-60 (Dewald Brevis,  8.3 ov), 3-62 (Ishan Kishan,  9.2 ov), 4-62 (Tilak Varma,  9.5 ov), 5-62 (Kieron Pollard,  10.1 ov), 6-79 (Ramandeep Singh,  13.2 ov)",
+      "fixture": 3,
+      "team": 6
+    }
+  ]
+}

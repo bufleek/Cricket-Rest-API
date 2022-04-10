@@ -27,12 +27,12 @@ export type Venue = {
 export type Bowling = {
   bowler: string;
   overs: string;
-  maiden: string;
+  maidens: string;
   runs: string;
   wickets: string;
   wides: string;
-  noballs: string;
-  econ: string;
+  no_balls: string;
+  econs: string;
   active: boolean;
 
   fixture: number;
@@ -69,6 +69,7 @@ export type Inning = {
   batting: Batting[];
   bowling: Bowling[];
   fall_of_wickets: string;
+  inning: string;
 
   fixture: number;
   team: number;
@@ -85,4 +86,5 @@ export type Fixture = {
   scores: Score[];
   venue: number;
   innings: Inning[];
+  featured: boolean;
 };
