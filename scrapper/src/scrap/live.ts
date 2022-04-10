@@ -57,6 +57,7 @@ class Live {
                             (node) => node.textContent
                           );
                           let info = stripMatchInfo(fixtureInfo || "");
+                          info.date?.setFullYear(new Date().getFullYear());
                           let image_urls = await fixtureEl.$$eval(
                             ".result-teambox .flag object",
                             (nodes) =>

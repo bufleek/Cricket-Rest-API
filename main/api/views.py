@@ -162,7 +162,7 @@ class VenueDetailView(generics.RetrieveAPIView):
 
 class FixtureListApiView(generics.ListCreateAPIView):
     serializer_class = FixtureSerializer
-    queryset = Fixture.objects.all().order_by("-date")
+    queryset = Fixture.objects.all().order_by("-id")
 
 
 class FixtureDetailView(generics.RetrieveAPIView):
