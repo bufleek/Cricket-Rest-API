@@ -8,9 +8,7 @@ const api = axios.create({
 });
 
 export async function insertSeries(data: any) {
-  const rawSeriesData: any[] = JSON.parse(data);
-
-  return api.post("series-bulk/", rawSeriesData).catch((_) => {});
+  return api.post("scrapper/series-bulk/", { data }).catch((_) => {});
 }
 
 export async function getLiveFixtures(params: any) {
@@ -24,9 +22,9 @@ export async function updateLive(params: any) {
   return api.post("scrapper/update-live/", { data: params }).catch((_) => {});
 }
 
-export async function getFixtures() {
+export async function getFixtures(status: string) {
   return api
-    .get("fixtures/")
+    .get(`fixtures/${status}/`)
     .then(({ data }) => data)
     .catch((_) => {});
 }

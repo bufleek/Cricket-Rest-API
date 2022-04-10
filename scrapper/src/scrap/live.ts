@@ -108,8 +108,14 @@ class Live {
                                   : null,
                             };
                           });
+                          let teamAScore = scores[0]?.trim();
+                          let teamBScore = scores[1]?.trim();
+
                           let fixture = {
-                            status: 0,
+                            status:
+                              teamAScore === "" && teamBScore === ""
+                                ? "SCHEDULED"
+                                : "LIVE",
                             team_a: {
                               name: teamNames[0],
                               logo_url: image_urls[0],
@@ -127,9 +133,6 @@ class Live {
                             commentary_url: links[1],
                             squads_url: links[2],
                           };
-                          fixture.team_a.full_score != "" &&
-                            fixture.team_b.full_score != "" &&
-                            (fixture.status = 1);
 
                           fixtures.push(fixture);
                           resolve_fx(fixtures);
@@ -145,8 +148,8 @@ class Live {
           // insert(series);
           resolve(series);
         } catch (error) {
-          console.log(error);
-          await run();
+          // console.log(error);
+          reject("");
         }
       };
       await run();

@@ -29,9 +29,13 @@ export default class Scrapper {
 
         const initializeDb = async () => {
           try {
-            let initialFixtures = await getFixtures();
-            if (initialFixtures.count === 0) {
+            let initialScheduledFixtures = await getFixtures("scheduled");
+            if (initialScheduledFixtures.count === 0) {
               await new Schedule().getSchedule();
+              await new Results().getResults();
+            }
+            let initialCompletedFixtures = await getFixtures("concluded");
+            if (initialCompletedFixtures.count === 0) {
               await new Results().getResults();
             }
           } catch (_) {
@@ -50,7 +54,16 @@ export default class Scrapper {
                 timeout: 90000,
               }
             );
-            let series = await live.getLiveFixtures(page);
+            let series: any[] = [];
+            await live
+              .getLiveFixtures(page)
+              .then((s) => {
+                series = s;
+              })
+              .catch((_) => {
+                throw new Error("");
+              });
+
             let rawLiveFixtures: any[] = [];
             series.forEach((srs) => {
               srs.fixtures.forEach((fxtr: any) => {

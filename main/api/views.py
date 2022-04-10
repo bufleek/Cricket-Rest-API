@@ -1,6 +1,7 @@
 import json
 
-from django.forms import model_to_dict
+from django.db.models import Q
+from django.forms import ValidationError, model_to_dict
 from django.http import HttpRequest, JsonResponse
 from main.api.serializers import (
     BattingSerializer,
@@ -30,6 +31,8 @@ from main.models import (
 )
 from rest_framework import generics
 
+allowed_statuses = ["live", "scheduled", "concluded"]
+
 
 class BulkCreate(generics.ListCreateAPIView):
     serializer_class = SeriesSerializer
@@ -37,7 +40,7 @@ class BulkCreate(generics.ListCreateAPIView):
 
     def post(self, request: HttpRequest):
 
-        for item in request.data:
+        for item in request.data.get("data"):
             series, _ = Series.objects.get_or_create(title=item.pop("title", None))
 
             for fixture in item.pop("fixtures", []):
@@ -60,6 +63,7 @@ class BulkCreate(generics.ListCreateAPIView):
                             **_team_b.validated_data
                         )
 
+                    fixture["status"] = fixture.get("status", "").upper()
                     _fixture = FixtureSerializer(
                         data={
                             "series": series,
@@ -101,6 +105,7 @@ class UpdateLiveView(generics.CreateAPIView):
         _innings = data.pop("innings", None)
         _scores = data.pop("scores", None)
 
+        data["status"] = data.get("status", "").upper()
         Fixture.objects.filter(id=data.get("id", None)).update(**data)
 
         fixture = Fixture.objects.get(id=data.get("id", None))
@@ -130,17 +135,17 @@ class UpdateLiveView(generics.CreateAPIView):
         return JsonResponse({"status": "success"})
 
 
-class SeriesListApiView(generics.ListCreateAPIView, generics.DestroyAPIView):
+class SeriesListApiView(generics.ListAPIView):
     serializer_class = SeriesSerializer
     queryset = Series.objects.all()
 
 
-class SeriesDetailView(generics.RetrieveUpdateAPIView):
+class SeriesDetailView(generics.RetrieveAPIView):
     serializer_class = SeriesSerializer
     queryset = Series.objects.all()
 
 
-class TeamListApiView(generics.ListCreateAPIView):
+class TeamListApiView(generics.ListAPIView):
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
 
@@ -150,7 +155,7 @@ class TeamDetailView(generics.RetrieveAPIView):
     queryset = Team.objects.all()
 
 
-class VenueListApiView(generics.CreateAPIView):
+class VenueListApiView(generics.ListAPIView):
     serializer_class = VenueSerializer
     queryset = Venue.objects.all()
 
@@ -160,9 +165,26 @@ class VenueDetailView(generics.RetrieveAPIView):
     queryset = Venue.objects.all()
 
 
-class FixtureListApiView(generics.ListCreateAPIView):
+class FixtureListApiView(generics.ListAPIView):
     serializer_class = FixtureSerializer
-    queryset = Fixture.objects.all().order_by("-id")
+    queryset = Fixture.objects.all().order_by("-date")
+
+    def get_queryset(self):
+        status = self.kwargs.get("status")
+        if not status in allowed_statuses:
+            return Fixture.objects.none()
+
+        if status == "live":
+            return (
+                Fixture.objects.filter(~Q(status="SCHEDULED"), ~Q(status="CONCLUDED"))
+                .order_by("-date")
+                .all()
+            )
+
+        if status == "scheduled":
+            return Fixture.objects.filter(status=status.upper()).order_by("date").all()
+
+        return Fixture.objects.filter(status=status.upper()).order_by("-date").all()
 
 
 class FixtureDetailView(generics.RetrieveAPIView):
@@ -170,17 +192,17 @@ class FixtureDetailView(generics.RetrieveAPIView):
     queryset = Fixture.objects.all()
 
 
-class ScoreListApiView(generics.ListCreateAPIView):
+class ScoreListApiView(generics.ListAPIView):
     serializer_class = ScoreSerializer
     queryset = Score.objects.all()
 
 
-class ScoreDetailView(generics.RetrieveUpdateAPIView):
+class ScoreDetailView(generics.RetrieveAPIView):
     serializer_class = ScoreSerializer
     queryset = Score.objects.all()
 
 
-class PlayerListApiView(generics.ListCreateAPIView):
+class PlayerListApiView(generics.ListAPIView):
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
 
@@ -190,7 +212,7 @@ class PlayerDetailView(generics.RetrieveAPIView):
     queryset = Player.objects.all()
 
 
-class SquadListApiView(generics.ListCreateAPIView):
+class SquadListApiView(generics.ListAPIView):
     serializer_class = SquadSerializer
     queryset = Squad.objects.all()
 
@@ -200,32 +222,32 @@ class SquadDetailView(generics.RetrieveAPIView):
     queryset = Squad.objects.all()
 
 
-class BattingListApiView(generics.ListCreateAPIView):
+class BattingListApiView(generics.ListAPIView):
     serializer_class = BattingSerializer
     queryset = Batting.objects.all()
 
 
-class BattingDetailView(generics.RetrieveUpdateAPIView):
+class BattingDetailView(generics.RetrieveAPIView):
     serializer_class = BattingSerializer
     queryset = Batting.objects.all()
 
 
-class BowlingListApiView(generics.ListCreateAPIView):
+class BowlingListApiView(generics.ListAPIView):
     serializer_class = BowlingSerializer
     queryset = Bowling.objects.all()
 
 
-class BowlingDetailView(generics.RetrieveUpdateAPIView):
+class BowlingDetailView(generics.RetrieveAPIView):
     serializer_class = BowlingSerializer
     queryset = Bowling.objects.all()
 
 
-class FallOfWicketListApiView(generics.ListCreateAPIView):
+class FallOfWicketListApiView(generics.ListAPIView):
     serializer_class = FallOfWicketSerializer
     queryset = FallOfWicket.objects.all()
 
 
-class FallOfWicketDetailView(generics.RetrieveUpdateAPIView):
+class FallOfWicketDetailView(generics.RetrieveAPIView):
     serializer_class = FallOfWicketSerializer
     queryset = FallOfWicket.objects.all()
 
