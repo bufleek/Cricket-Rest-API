@@ -1,17 +1,15 @@
-import fs from "fs";
 import { Page } from "puppeteer";
 import { updateLive } from "../api";
 import Scrapper from "../scrapper";
 import { Batting, Bowling, Fixture, Inning, Score } from "../types";
-import ScoreCard from "./scorecard";
 import { stripMatchInfo } from "./utils/fixture";
 
-const insert = (data: any) => {
-  fs.writeFileSync("./data/live.json", JSON.stringify(data));
-};
-const insertScorecard = (data: any, fixture_id: number) => {
-  fs.writeFileSync(`./data/scorecard_${fixture_id}.json`, JSON.stringify(data));
-};
+// const insert = (data: any) => {
+//   fs.writeFileSync("./data/live.json", JSON.stringify(data));
+// };
+// const insertScorecard = (data: any, fixture_id: number) => {
+//   fs.writeFileSync(`./data/scorecard_${fixture_id}.json`, JSON.stringify(data));
+// };
 
 class Live {
   public async streamFixture(fixture: any, url: string) {
@@ -143,7 +141,7 @@ class Live {
             )
           );
 
-          insert(series);
+          // insert(series);
           resolve(series);
         } catch (error) {
           console.log(error);
@@ -154,44 +152,13 @@ class Live {
     });
   }
 
-  public async followLiveFixture(fixture: any, rawFixture: any): Promise<any> {
-    return new Promise(async (resolve, _) => {
-      const scrapper = Scrapper.getInstance();
-      const run = async () => {
-        await scrapper.initializeScrapper();
-        let page = await Scrapper.browser.newPage();
-        try {
-          await page.goto(rawFixture.scorecard_url, {
-            waitUntil: "networkidle0",
-          });
-          let scorecard = await new ScoreCard().getScorecard(
-            rawFixture.scorecard_url,
-            page
-          );
-          insertScorecard(scorecard, fixture.id);
-          // await page.close();
-        } catch (err) {
-          console.log(err);
-          await page.close();
-          await run();
-        }
-      };
-      await run();
-    });
-  }
-
-  public async followLiveFixtures(
-    fixtures: any[],
-    rawLiveFixtures: any[]
-  ): Promise<any> {}
-
   public async getLiveScorecard(page: Page, _fixture: any): Promise<any> {
     return new Promise(async (resolve_scorecard, reject) => {
       const run = async () => {
         try {
           await page.goto(_fixture.scorecard_url, {
-            waitUntil: "networkidle2",
-            timeout: 60000,
+            waitUntil: "networkidle0",
+            timeout: 90000,
           });
 
           let activeTab = await page.$eval(
@@ -204,8 +171,8 @@ class Live {
               (node) => node.getAttribute("href")
             );
             await page.goto(_fixture.scorecard_url, {
-              waitUntil: "networkidle2",
-              timeout: 60000,
+              waitUntil: "networkidle0",
+              timeout: 90000,
             });
           }
           await page.waitForSelector(".full_scorecard");
@@ -413,7 +380,7 @@ class Live {
 
             await updateLive(fixture);
 
-            if (Date.now() - scrapStartTime < 600000 && !matchEnded) {
+            if (Date.now() - scrapStartTime < 900000 && !matchEnded) {
               await new Promise((resolve, _) => {
                 setTimeout(() => {
                   resolve(null);
@@ -430,7 +397,7 @@ class Live {
             await run();
           }
         } catch (err) {
-          console.log(err);
+          // console.log(err);
           await run();
         }
       };

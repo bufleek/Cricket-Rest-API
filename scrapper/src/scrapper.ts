@@ -1,6 +1,8 @@
 import puppeteer, { Browser, Page } from "puppeteer";
-import { getFixtures } from "./api";
+import { getFixtures, getLiveFixtures } from "./api";
 import Live from "./scrap/live";
+import Results from "./scrap/results";
+import Schedule from "./scrap/schedule";
 
 export default class Scrapper {
   private static instance: Scrapper;
@@ -18,13 +20,25 @@ export default class Scrapper {
 
   public async initializeScrapper() {
     if (Scrapper.browser == null) {
-      Scrapper.browser = await puppeteer.launch({ headless: true });
+      Scrapper.browser = await puppeteer.launch({ headless: false });
 
       new Promise(async (resolve, reject) => {
         let live = new Live();
         let liveFixtures: any[] = [];
         let pages: (Page | null)[] = [];
 
+        const initializeDb = async () => {
+          try {
+            let initialFixtures = await getFixtures();
+            if (initialFixtures.count === 0) {
+              await new Schedule().getSchedule();
+              await new Results().getResults();
+            }
+          } catch (_) {
+            await initializeDb();
+          }
+        };
+        await initializeDb();
         const run = async () => {
           let page = await Scrapper.browser.newPage();
           try {
@@ -32,8 +46,8 @@ export default class Scrapper {
             await page.goto(
               "https://www.news18.com/cricketnext/cricket-live-scorecard/",
               {
-                waitUntil: "networkidle2",
-                timeout: 60000,
+                waitUntil: "networkidle0",
+                timeout: 90000,
               }
             );
             let series = await live.getLiveFixtures(page);
@@ -50,10 +64,10 @@ export default class Scrapper {
               liveFixtures.length === 0 ||
               liveFixtures.length != rawLiveFixtures.length
             ) {
-              liveFixtures = await getFixtures(series)
+              liveFixtures = await getLiveFixtures(series)
                 .then((data) => data)
                 .catch(({ response }) => {
-                  console.log("error ", response.data);
+                  // console.log("error ", response.data);
                 });
               await Promise.all(
                 pages.map(
@@ -98,17 +112,17 @@ export default class Scrapper {
             );
 
             await page.close();
-            console.log("complete loop");
+            // console.log("complete loop");
             await run();
           } catch (error) {
-            console.log(error);
+            // console.log(error);
             await page.close();
             await run();
           }
         };
 
         await run();
-        console.log("loop complete");
+        await this.initializeScrapper();
       });
     }
   }

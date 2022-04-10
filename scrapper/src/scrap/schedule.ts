@@ -1,11 +1,11 @@
-import fs from "fs";
 import { ElementHandle } from "puppeteer";
+import { insertSeries } from "../api";
 import Scrapper from "../scrapper";
 import { stripMatchInfo } from "./utils/fixture";
 
-const insert = (data: any) => {
-  fs.writeFileSync("./data/scheduled.json", JSON.stringify(data));
-};
+// const insert = (data: any) => {
+//   fs.writeFileSync("./data/scheduled.json", JSON.stringify(data));
+// };
 
 export default class Schedule {
   private scrapper = Scrapper.getInstance();
@@ -57,7 +57,7 @@ export default class Schedule {
         );
 
         fixtures.push({
-          status: 0,
+          status: "SCHEDULED",
           teams: team_names?.map((name, index) => ({
             name: name.trim(),
             logo_url: flags[index + 1],
@@ -75,10 +75,13 @@ export default class Schedule {
       await this.scrapper.initializeScrapper();
       let page = await Scrapper.browser.newPage();
       try {
+        await page.setViewport({ width: 1200, height: 600 });
         await page.goto(
           "https://www.news18.com/cricketnext/cricket-schedule/",
-          { waitUntil: "domcontentloaded" }
+          { waitUntil: "networkidle0", timeout: 90000 }
         );
+        // console.log("schedule loaded");
+        await page.waitForSelector("ul.schedule_tab");
         await page.click("ul.schedule_tab a:nth-child(1)");
         await page.waitForSelector(".schedule-row");
         const seriesEls = await page.$$(".schedule-row");
@@ -95,10 +98,12 @@ export default class Schedule {
             fixtures,
           });
         }
-        insert(series);
+        // insert(series);
+        console.log("inserting schedule");
+        await insertSeries(series);
         await page.close();
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         await page.close();
         await run();
       }

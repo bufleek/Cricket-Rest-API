@@ -15,7 +15,7 @@ export default class ScoreCard {
         let page = scorecardPage || (await Scrapper.browser.newPage());
 
         try {
-          await page.goto(url);
+          await page.goto(url, { waitUntil: "networkidle0", timeout: 90000 });
           await page.waitForSelector(".scoreCard-main");
           let status = (
             await page.$eval(".matchStatus", (node) => node.textContent)
@@ -158,7 +158,7 @@ export default class ScoreCard {
           await page.close();
           resolve(full_scoreboard);
         } catch (error) {
-          console.error(error);
+          // console.error(error);
           await page.close();
           await run();
         }

@@ -1,9 +1,9 @@
-import fs from "fs";
+import { insertSeries } from "../api";
 import Scrapper from "../scrapper";
 
-const insert = (data: any) => {
-  fs.writeFileSync("./data/results.json", JSON.stringify(data));
-};
+// const insert = (data: any) => {
+//   fs.writeFileSync("./data/results.json", JSON.stringify(data));
+// };
 
 export default class Results {
   private scrapper = Scrapper.getInstance();
@@ -13,7 +13,10 @@ export default class Results {
       await this.scrapper.initializeScrapper();
       let page = await Scrapper.browser.newPage();
       try {
-        await page.goto("https://www.news18.com/cricketnext/results");
+        await page.goto("https://www.news18.com/cricketnext/results", {
+          waitUntil: "domcontentloaded",
+          timeout: 90000,
+        });
         await page.waitForSelector(".schedule-row");
         let allSchedules = await page.$$(".schedule-row");
         let series = [];
@@ -71,7 +74,7 @@ export default class Results {
             //     : null;
             let venue = (info?.replace(`${dateStr}. `, "") || null)?.trim();
             fixtures.push({
-              status: 2,
+              status: "CONCLUDED",
               status_note: (
                 await fixture_el.$eval(".run_info", (node) => node.textContent)
               )?.trim(),
@@ -90,7 +93,9 @@ export default class Results {
             fixtures,
           });
         }
-        insert(series);
+        // insert(series);
+        console.log("inserting results");
+        await insertSeries(series);
         await page.close();
       } catch (error) {
         // console.error(error);

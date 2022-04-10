@@ -13,7 +13,7 @@ export async function insertSeries(data: any) {
   return api.post("series-bulk/", rawSeriesData).catch((_) => {});
 }
 
-export async function getFixtures(params: any) {
+export async function getLiveFixtures(params: any) {
   return api
     .get("scrapper/get-live/", { data: params })
     .then(({ data }) => data)
@@ -22,6 +22,13 @@ export async function getFixtures(params: any) {
 
 export async function updateLive(params: any) {
   return api.post("scrapper/update-live/", { data: params }).catch((_) => {});
+}
+
+export async function getFixtures() {
+  return api
+    .get("fixtures/")
+    .then(({ data }) => data)
+    .catch((_) => {});
 }
 
 export default api;

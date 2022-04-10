@@ -7,7 +7,7 @@ export default class Commentary {
     let run = async () => {
       this.scrapper.initializeScrapper();
       let page = await Scrapper.browser.newPage();
-      await page.goto(url);
+      await page.goto(url, { waitUntil: "networkidle0", timeout: 90000 });
       try {
         await page.close();
       } catch (error) {
