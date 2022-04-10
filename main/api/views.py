@@ -233,6 +233,7 @@ class FallOfWicketDetailView(generics.RetrieveUpdateAPIView):
 class ScrapperLiveFixtureList(generics.ListAPIView):
     serializer_class = FixtureSerializer
     queryset = Fixture.objects.all()
+    pagination_class = None
 
     def list(self, request, *args, **kwargs):
         fixtures = []
