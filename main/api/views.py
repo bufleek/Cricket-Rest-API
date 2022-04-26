@@ -2,33 +2,15 @@ import json
 
 from django.db.models import Q
 from django.forms import ValidationError, model_to_dict
-from django.http import HttpRequest, JsonResponse
-from main.api.serializers import (
-    BattingSerializer,
-    BowlingSerializer,
-    FallOfWicketSerializer,
-    FixtureSerializer,
-    InningSerializer,
-    PlayerSerializer,
-    ScoreSerializer,
-    SeriesSerializer,
-    SquadSerializer,
-    TeamSerializer,
-    VenueSerializer,
-)
-from main.models import (
-    Batting,
-    Bowling,
-    FallOfWicket,
-    Fixture,
-    Inning,
-    Player,
-    Score,
-    Series,
-    Squad,
-    Team,
-    Venue,
-)
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from main.api.serializers import (BattingSerializer, BowlingSerializer,
+                                  FallOfWicketSerializer, FixtureSerializer,
+                                  InningSerializer, PlayerSerializer,
+                                  ScoreSerializer, SeriesSerializer,
+                                  SquadSerializer, TeamSerializer,
+                                  VenueSerializer)
+from main.models import (Batting, Bowling, FallOfWicket, Fixture, Inning,
+                         Player, Score, Series, Squad, Team, Venue)
 from rest_framework import generics
 
 allowed_statuses = ["live", "scheduled", "concluded"]
@@ -331,12 +313,34 @@ class InningListView(generics.ListAPIView):
     queryset = Inning.objects.all()
 
 
-class ScorecardDetailView(generics.ListAPIView):
+class ScorecardDetailView(generics.RetrieveAPIView):
     serializer_class = InningSerializer
     queryset = Inning.objects.all()
     pagination_class = None
 
     def retrieve(self, request, *args, **kwargs):
-        innings = Inning.objects.filter(fixture__id=kwargs.get("fixture")).all()
-        print(innings)
-        return model_to_dict(innings)
+        _innings = Inning.objects.filter(fixture__id=kwargs.get("fixture")).all()
+        innings = []
+        for inning in _innings:
+            _inning = model_to_dict(inning)
+            _inning["batting"] = json.loads(_inning["batting"])
+            _inning["bowling"] = json.loads(_inning["bowling"])
+            innings.append(_inning)
+
+        return JsonResponse(innings, safe=False)
+
+class SeriesApiListView(generics.ListAPIView):
+    serializer_class = SeriesSerializer
+    queryset = Series.objects.all()
+
+class SeriesFixturesView(generics.RetrieveAPIView):
+    serializer_class = SeriesSerializer
+    queryset = Series.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        _fixtures = Fixture.objects.filter(series__id=kwargs.get("series")).all()
+        fixtures = []
+        for fixture in _fixtures:
+            fixtures.append(model_to_dict(fixture))
+
+        return JsonResponse(fixtures, safe=False)

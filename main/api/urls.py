@@ -1,13 +1,8 @@
 from django.urls import path
 
-from .views import (
-    BulkCreate,
-    FixtureDetailView,
-    FixtureListApiView,
-    ScorecardDetailView,
-    ScrapperLiveFixtureList,
-    UpdateLiveView,
-)
+from .views import (BulkCreate, FixtureDetailView, FixtureListApiView,
+                    ScorecardDetailView, ScrapperLiveFixtureList,
+                    SeriesApiListView, SeriesFixturesView, UpdateLiveView)
 
 urlpatterns = [
     # path("series/", SeriesListApiView.as_view()),
@@ -17,6 +12,8 @@ urlpatterns = [
     path("fixtures/<str:status>/", FixtureListApiView.as_view()),
     path("fixtures/<int:pk>/", FixtureDetailView.as_view()),
     path("fixtures/<int:fixture>/scorecard/", ScorecardDetailView.as_view()),
+    path("series/", SeriesApiListView.as_view()),
+    path("series/<int:series>/fixtures/", SeriesFixturesView.as_view()),
     # path("players/", PlayerListApiView.as_view()),
     # path("players/<int:pk>", PlayerDetailView.as_view()),
     # path("venues/", VenueListApiView.as_view()),
