@@ -87,7 +87,7 @@ export default class Scrapper {
                 pages.map(
                   (it) =>
                     new Promise(async (resolve, _) => {
-                      await it?.close();
+                      it && (await it.close());
                     })
                 )
               );
