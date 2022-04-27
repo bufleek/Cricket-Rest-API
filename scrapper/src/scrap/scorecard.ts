@@ -18,13 +18,13 @@ export default class ScoreCard {
           await page.goto(url, { waitUntil: "networkidle0", timeout: 90000 });
           await page.waitForSelector(".scoreCard-main");
           let status = (
-            (await page.$eval(".matchStatus", (node) => node.textContent)) ?? ""
+            (await page.$eval(".matchStatus", (node) => node.textContent)) || ""
           ).trim();
           let info = await page.$eval(
             ".match-headingwrap .heading-2",
             (node) => node.textContent
           );
-          let match_subtitle = (info ?? "").split(",", 1)[0].trim() || null;
+          let match_subtitle = (info || "").split(",", 1)[0].trim() || null;
           let status_note = await page.$eval(
             ".final-resultbtn",
             (node) => node.textContent
@@ -44,7 +44,7 @@ export default class ScoreCard {
               ".teamname span",
               (node) => node.textContent
             );
-            let teamname = (team_score ?? "").replace("" + score, "").trim();
+            let teamname = (team_score || "").replace("" + score, "").trim();
             let over_rr = await scoreboard_box.$eval(
               ".over",
               (node) => node.textContent
@@ -53,7 +53,7 @@ export default class ScoreCard {
               ".over span",
               (node) => node.textContent
             );
-            let over = (over_rr ?? "")
+            let over = (over_rr || "")
               .replace("" + rr, "")
               .replace("(", "")
               .replace(")", "")
@@ -62,13 +62,13 @@ export default class ScoreCard {
               (await scoreboard_box.$eval(
                 ".fallWickets-txt",
                 (node) => node.textContent
-              )) ?? ""
+              )) || ""
             ).trim();
             let extras_total = (
               (await scoreboard_box.$eval(
                 ".extra-run .heading",
                 (node) => node.textContent
-              )) ?? ""
+              )) || ""
             )
               .replace("Extra:", "")
               .trim();
@@ -76,7 +76,7 @@ export default class ScoreCard {
               (await scoreboard_box.$eval(
                 ".extra-run p",
                 (node) => node.textContent
-              )) ?? ""
+              )) || ""
             )
               .replace("(", "")
               .replace(")", "")
@@ -93,7 +93,7 @@ export default class ScoreCard {
             scoreboard["teamname"] = teamname || "";
             scoreboard["image_url"] = image_url || "";
             scoreboard["score"] = score || "";
-            scoreboard["runrate"] = (rr ?? "").replace("RR", "").trim() || "";
+            scoreboard["runrate"] = (rr || "").replace("RR", "").trim() || "";
             scoreboard["over"] = over.trim() || "";
             scoreboard["fow"] = fallofwickets.trim() || "";
             scoreboard["extras"] = extra || "";
@@ -125,7 +125,7 @@ export default class ScoreCard {
                         (node) => node.textContent || ""
                       ),
                       status: await tds[l].$eval(".playstatus", (node) =>
-                        (node.textContent ?? "").trim()
+                        (node.textContent || "").trim()
                       ),
                     };
                   } else {

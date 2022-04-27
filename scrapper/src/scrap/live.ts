@@ -126,7 +126,7 @@ class Live {
                             team_b: {
                               name: teamNames[1],
                               logo_url: image_urls[1],
-                              full_score: (scores[1] ?? "").trim(),
+                              full_score: (scores[1] || "").trim(),
                               ...scores_info[1],
                             },
                             ...info,
@@ -204,7 +204,7 @@ class Live {
                     (await fullScorecardEl.$eval(
                       ".final-resultbtn",
                       (node) => node.textContent
-                    ))) ??
+                    ))) ||
                   "";
               } catch (_) {}
 
@@ -272,7 +272,7 @@ class Live {
                       (await accordion.$eval(
                         ".teamname",
                         (node) => node.textContent
-                      )) ?? ""
+                      )) || ""
                     )
                       .replace(score || "", "")
                       .trim();
@@ -312,7 +312,7 @@ class Live {
                                 (await tr.$eval(
                                   "td .playername",
                                   (node) => node.textContent
-                                )) ?? ""
+                                )) || ""
                               ).trim();
                               if (tableType.toLocaleLowerCase() === "batsman") {
                                 const playstatus = await tr.$eval(
@@ -322,11 +322,11 @@ class Live {
 
                                 batting.push({
                                   batsman: playerName || "",
-                                  runs: (tds[1] ?? "").trim() || "",
-                                  balls: (tds[2] ?? "").trim() || "",
-                                  fours: (tds[3] ?? "").trim() || "",
-                                  sixes: (tds[4] ?? "").trim() || "",
-                                  strike_rate: (tds[5] ?? "").trim() || "",
+                                  runs: (tds[1] || "").trim() || "",
+                                  balls: (tds[2] || "").trim() || "",
+                                  fours: (tds[3] || "").trim() || "",
+                                  sixes: (tds[4] || "").trim() || "",
+                                  strike_rate: (tds[5] || "").trim() || "",
                                   out: playstatus || "",
                                   active: await tr.evaluate((node) =>
                                     node.classList.contains("active")
@@ -339,13 +339,13 @@ class Live {
                               ) {
                                 bowling.push({
                                   bowler: playerName || "",
-                                  overs: (tds[1] ?? "").trim() || "",
-                                  maidens: (tds[2] ?? "").trim() || "",
-                                  runs: (tds[3] ?? "").trim() || "",
-                                  wickets: (tds[4] ?? "").trim() || "",
-                                  wides: (tds[5] ?? "").trim() || "",
-                                  no_balls: (tds[6] ?? "").trim() || "",
-                                  econs: (tds[7] ?? "").trim() || "",
+                                  overs: (tds[1] || "").trim() || "",
+                                  maidens: (tds[2] || "").trim() || "",
+                                  runs: (tds[3] || "").trim() || "",
+                                  wickets: (tds[4] || "").trim() || "",
+                                  wides: (tds[5] || "").trim() || "",
+                                  no_balls: (tds[6] || "").trim() || "",
+                                  econs: (tds[7] || "").trim() || "",
                                   active: await tr.evaluate((node) =>
                                     node.classList.contains("active")
                                   ),
