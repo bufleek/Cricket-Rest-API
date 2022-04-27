@@ -32,25 +32,6 @@ export default class Schedule {
 
         let info = stripMatchInfo(scheduleInfo || "");
 
-        // let scheduleInfo = await fixtureEl.$eval(".schedule-info", (node) =>
-        //   node.textContent?.split("•")
-        // );
-
-        // let start_time = scheduleInfo
-        //   ? scheduleInfo[2].replace("(IST)", "").trim()
-        //   : null;
-
-        // let date = scheduleInfo
-        //   ? (() => {
-        //       let time_split = start_time?.split(":");
-        //       let dateUTC = new Date(scheduleInfo[1]);
-        //       dateUTC.setHours(parseInt(time_split ? time_split[0] : ""));
-        //       dateUTC.setMinutes(parseInt(time_split ? time_split[1] : ""));
-        //       return dateUTC;
-        //     })()
-        //   : null;
-        // let venue = scheduleInfo ? scheduleInfo[3].trim() : null;
-
         let flags = await fixtureEl.$$eval(
           ".schedule-box-right .flag_icon div img",
           (nodes) => nodes.map((node) => node.getAttribute("src"))
@@ -101,6 +82,7 @@ export default class Schedule {
         // insert(series);
         console.log("inserting schedule");
         await insertSeries(series);
+        console.log("inserted");
         await page.close();
       } catch (error) {
         // console.error(error);

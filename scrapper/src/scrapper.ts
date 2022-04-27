@@ -20,7 +20,7 @@ export default class Scrapper {
 
   public async initializeScrapper() {
     if (Scrapper.browser == null) {
-      Scrapper.browser = await puppeteer.launch({ headless: false });
+      Scrapper.browser = await puppeteer.launch({ headless: true });
 
       new Promise(async (resolve, reject) => {
         let live = new Live();
@@ -31,11 +31,12 @@ export default class Scrapper {
           try {
             let initialScheduledFixtures = await getFixtures("scheduled");
             if (initialScheduledFixtures.count === 0) {
+              console.log("getting schedule");
               await new Schedule().getSchedule();
-              await new Results().getResults();
             }
             let initialCompletedFixtures = await getFixtures("concluded");
             if (initialCompletedFixtures.count === 0) {
+              console.log("getting concluded");
               await new Results().getResults();
             }
           } catch (_) {

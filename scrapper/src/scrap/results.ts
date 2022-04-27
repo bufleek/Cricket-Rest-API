@@ -96,6 +96,7 @@ export default class Results {
         // insert(series);
         console.log("inserting results");
         await insertSeries(series);
+        console.log("inserted");
         await page.close();
       } catch (error) {
         // console.error(error);
