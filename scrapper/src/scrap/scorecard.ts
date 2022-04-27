@@ -18,13 +18,13 @@ export default class ScoreCard {
           await page.goto(url, { waitUntil: "networkidle0", timeout: 90000 });
           await page.waitForSelector(".scoreCard-main");
           let status = (
-            await page.$eval(".matchStatus", (node) => node.textContent)
-          )?.trim();
+            (await page.$eval(".matchStatus", (node) => node.textContent)) ?? ""
+          ).trim();
           let info = await page.$eval(
             ".match-headingwrap .heading-2",
             (node) => node.textContent
           );
-          let match_subtitle = info?.split(",", 1)[0].trim() || null;
+          let match_subtitle = (info ?? "").split(",", 1)[0].trim() || null;
           let status_note = await page.$eval(
             ".final-resultbtn",
             (node) => node.textContent
@@ -44,7 +44,7 @@ export default class ScoreCard {
               ".teamname span",
               (node) => node.textContent
             );
-            let teamname = team_score?.replace("" + score, "").trim();
+            let teamname = (team_score ?? "").replace("" + score, "").trim();
             let over_rr = await scoreboard_box.$eval(
               ".over",
               (node) => node.textContent
@@ -53,38 +53,38 @@ export default class ScoreCard {
               ".over span",
               (node) => node.textContent
             );
-            let over = over_rr
-              ?.replace("" + rr, "")
+            let over = (over_rr ?? "")
+              .replace("" + rr, "")
               .replace("(", "")
               .replace(")", "")
               .trim();
             let fallofwickets = (
-              await scoreboard_box.$eval(
+              (await scoreboard_box.$eval(
                 ".fallWickets-txt",
                 (node) => node.textContent
-              )
-            )?.trim();
+              )) ?? ""
+            ).trim();
             let extras_total = (
-              await scoreboard_box.$eval(
+              (await scoreboard_box.$eval(
                 ".extra-run .heading",
                 (node) => node.textContent
-              )
+              )) ?? ""
             )
-              ?.replace("Extra:", "")
+              .replace("Extra:", "")
               .trim();
             let extras_split = (
-              await scoreboard_box.$eval(
+              (await scoreboard_box.$eval(
                 ".extra-run p",
                 (node) => node.textContent
-              )
+              )) ?? ""
             )
-              ?.replace("(", "")
+              .replace("(", "")
               .replace(")", "")
               .replace(" ", "")
               .split(",");
             let extra: DynamicObject<string> = {};
-            extra["total"] = extras_total?.replace("Extras:", "").trim() || "";
-            extras_split?.forEach((split) => {
+            extra["total"] = extras_total.replace("Extras:", "").trim() || "";
+            extras_split.forEach((split) => {
               let xtra = split.split("-", 2);
               extra[xtra[0].trim()] = xtra[1].trim();
             });
@@ -93,9 +93,9 @@ export default class ScoreCard {
             scoreboard["teamname"] = teamname || "";
             scoreboard["image_url"] = image_url || "";
             scoreboard["score"] = score || "";
-            scoreboard["runrate"] = rr?.replace("RR", "").trim() || "";
-            scoreboard["over"] = over?.trim() || "";
-            scoreboard["fow"] = fallofwickets?.trim() || "";
+            scoreboard["runrate"] = (rr ?? "").replace("RR", "").trim() || "";
+            scoreboard["over"] = over.trim() || "";
+            scoreboard["fow"] = fallofwickets.trim() || "";
             scoreboard["extras"] = extra || "";
 
             let match_tables = await scoreboard_box.$$(".match-table");
@@ -125,7 +125,7 @@ export default class ScoreCard {
                         (node) => node.textContent || ""
                       ),
                       status: await tds[l].$eval(".playstatus", (node) =>
-                        node.textContent?.trim()
+                        (node.textContent ?? "").trim()
                       ),
                     };
                   } else {

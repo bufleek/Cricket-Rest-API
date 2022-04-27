@@ -30,7 +30,7 @@ export default class Results {
               ".schedule-info",
               (node) => node.textContent
             );
-            let dateStr = info?.split(".", 1)[0];
+            let dateStr = info && info.split(".", 1)[0];
             let date = (() => {
               let dateUTC = dateStr ? new Date(dateStr.trim()) : null;
               return dateUTC;
@@ -49,18 +49,21 @@ export default class Results {
               );
               let team = {
                 name: (
-                  await team_el.$eval(
+                  (await team_el.$eval(
                     ".series_name",
                     (node) => node.textContent
-                  )
-                )?.trim(),
+                  )) ?? ""
+                ).trim(),
                 logo_url: (
-                  await team_el.$eval(".flag_icons_result img", (node) =>
+                  (await team_el.$eval(".flag_icons_result img", (node) =>
                     node.getAttribute("src")
-                  )
-                )?.trim(),
-                score: score?.replace("" + overs, "")?.trim(),
-                overs: overs?.replace("(", "").replace("OVR)", "").trim(),
+                  )) ?? ""
+                ).trim(),
+                score: (score ?? "").replace("" + overs, "").trim(),
+                overs: (overs ?? "")
+                  .replace("(", "")
+                  .replace("OVR)", "")
+                  .trim(),
               };
               teams.push(team);
             }
@@ -72,12 +75,15 @@ export default class Results {
             //   urls[0] != null
             //     ? await new Scorecard().getScorecard(urls[0])
             //     : null;
-            let venue = (info?.replace(`${dateStr}. `, "") || null)?.trim();
+            let venue = (info ?? "").replace(`${dateStr}. `, "").trim();
             fixtures.push({
               status: "CONCLUDED",
               status_note: (
-                await fixture_el.$eval(".run_info", (node) => node.textContent)
-              )?.trim(),
+                (await fixture_el.$eval(
+                  ".run_info",
+                  (node) => node.textContent
+                )) ?? ""
+              ).trim(),
               date,
               venue,
               teams,
@@ -88,8 +94,11 @@ export default class Results {
           }
           series.push({
             title: (
-              await schedule.$eval(".schedule-date", (node) => node.textContent)
-            )?.trim(),
+              (await schedule.$eval(
+                ".schedule-date",
+                (node) => node.textContent
+              )) ?? ""
+            ).trim(),
             fixtures,
           });
         }

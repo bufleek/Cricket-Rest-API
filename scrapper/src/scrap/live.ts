@@ -57,7 +57,8 @@ class Live {
                             (node) => node.textContent
                           );
                           let info = stripMatchInfo(fixtureInfo || "");
-                          info.date?.setFullYear(new Date().getFullYear());
+                          info.date &&
+                            info.date.setFullYear(new Date().getFullYear());
                           let image_urls = await fixtureEl.$$eval(
                             ".result-teambox .flag object",
                             (nodes) =>
@@ -96,7 +97,7 @@ class Live {
                             (nodes) => nodes.map((node) => node.textContent)
                           );
                           let scores_info = scores.map((score) => {
-                            let split_score = score?.split("(");
+                            let split_score = score ? score.split("(") : [];
                             return {
                               score:
                                 split_score && split_score[0]
@@ -108,8 +109,8 @@ class Live {
                                   : null,
                             };
                           });
-                          let teamAScore = scores[0]?.trim();
-                          let teamBScore = scores[1]?.trim();
+                          let teamAScore = scores[0] && scores[0].trim();
+                          let teamBScore = scores[1] && scores[1].trim();
 
                           let fixture = {
                             status:
@@ -119,13 +120,13 @@ class Live {
                             team_a: {
                               name: teamNames[0],
                               logo_url: image_urls[0],
-                              full_score: scores[0]?.trim(),
+                              full_score: scores[0] && scores[0].trim(),
                               ...scores_info[0],
                             },
                             team_b: {
                               name: teamNames[1],
                               logo_url: image_urls[1],
-                              full_score: scores[1]?.trim(),
+                              full_score: (scores[1] ?? "").trim(),
                               ...scores_info[1],
                             },
                             ...info,
@@ -190,21 +191,29 @@ class Live {
             let scoresPromise = new Promise<Score[]>(async (resolve, _) => {
               await page.waitForSelector(".match-status");
               status =
-                (await fullScorecardEl?.$eval(
-                  ".match-status",
-                  (node) => node.textContent
-                )) || "";
+                (fullScorecardEl &&
+                  (await fullScorecardEl.$eval(
+                    ".match-status",
+                    (node) => node.textContent
+                  ))) ||
+                "";
 
               try {
                 status_note =
-                  (await fullScorecardEl?.$eval(
-                    ".final-resultbtn",
-                    (node) => node.textContent
-                  )) || "";
+                  (fullScorecardEl &&
+                    (await fullScorecardEl.$eval(
+                      ".final-resultbtn",
+                      (node) => node.textContent
+                    ))) ??
+                  "";
               } catch (_) {}
 
               let scores = await Promise.all(
-                ((await fullScorecardEl?.$$(".socrebox-inner")) || []).map(
+                (
+                  (fullScorecardEl &&
+                    (await fullScorecardEl.$$(".socrebox-inner"))) ||
+                  []
+                ).map(
                   (scorebox) =>
                     new Promise<Score>(async (resolve, _) => {
                       let teamName = await scorebox.$eval(
@@ -218,16 +227,15 @@ class Live {
                       // let logo_url = await scorebox.$eval("img.teamflag", (node) =>
                       //   node.getAttribute("src")
                       // );
-                      let rRSplit = (
-                        await scorebox.$eval(
-                          ".teamRunRate",
-                          (node) => node.textContent
-                        )
-                      )?.split(" ");
+                      let rr = await scorebox.$eval(
+                        ".teamRunRate",
+                        (node) => node.textContent
+                      );
+                      let rRSplit = rr && rr.split(" ");
                       let overs = rRSplit && rRSplit[0] ? rRSplit[0] : null;
                       let full_score =
                         _score && overs ? `${_score} ${overs}` : "";
-                      overs?.replace("(", "").replace(")", "");
+                      overs && overs.replace("(", "").replace(")", "");
                       let runrate = rRSplit && rRSplit[2] ? rRSplit[2] : "";
 
                       let _team =
@@ -261,13 +269,13 @@ class Live {
                       (node) => node.textContent
                     );
                     let teamName = (
-                      await accordion.$eval(
+                      (await accordion.$eval(
                         ".teamname",
                         (node) => node.textContent
-                      )
+                      )) ?? ""
                     )
-                      ?.replace(score || "", "")
-                      ?.trim();
+                      .replace(score || "", "")
+                      .trim();
                     let inning_title = await accordion.$eval(
                       ".inning_row .inning",
                       (node) => node.textContent
@@ -301,11 +309,11 @@ class Live {
                                 nodes.map((node) => node.textContent)
                               );
                               const playerName = (
-                                await tr.$eval(
+                                (await tr.$eval(
                                   "td .playername",
                                   (node) => node.textContent
-                                )
-                              )?.trim();
+                                )) ?? ""
+                              ).trim();
                               if (tableType.toLocaleLowerCase() === "batsman") {
                                 const playstatus = await tr.$eval(
                                   "td .playstatus",
@@ -314,11 +322,11 @@ class Live {
 
                                 batting.push({
                                   batsman: playerName || "",
-                                  runs: tds[1]?.trim() || "",
-                                  balls: tds[2]?.trim() || "",
-                                  fours: tds[3]?.trim() || "",
-                                  sixes: tds[4]?.trim() || "",
-                                  strike_rate: tds[5]?.trim() || "",
+                                  runs: (tds[1] ?? "").trim() || "",
+                                  balls: (tds[2] ?? "").trim() || "",
+                                  fours: (tds[3] ?? "").trim() || "",
+                                  sixes: (tds[4] ?? "").trim() || "",
+                                  strike_rate: (tds[5] ?? "").trim() || "",
                                   out: playstatus || "",
                                   active: await tr.evaluate((node) =>
                                     node.classList.contains("active")
@@ -331,13 +339,13 @@ class Live {
                               ) {
                                 bowling.push({
                                   bowler: playerName || "",
-                                  overs: tds[1]?.trim() || "",
-                                  maidens: tds[2]?.trim() || "",
-                                  runs: tds[3]?.trim() || "",
-                                  wickets: tds[4]?.trim() || "",
-                                  wides: tds[5]?.trim() || "",
-                                  no_balls: tds[6]?.trim() || "",
-                                  econs: tds[7]?.trim() || "",
+                                  overs: (tds[1] ?? "").trim() || "",
+                                  maidens: (tds[2] ?? "").trim() || "",
+                                  runs: (tds[3] ?? "").trim() || "",
+                                  wickets: (tds[4] ?? "").trim() || "",
+                                  wides: (tds[5] ?? "").trim() || "",
+                                  no_balls: (tds[6] ?? "").trim() || "",
+                                  econs: (tds[7] ?? "").trim() || "",
                                   active: await tr.evaluate((node) =>
                                     node.classList.contains("active")
                                   ),

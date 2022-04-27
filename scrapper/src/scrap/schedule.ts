@@ -18,9 +18,10 @@ export default class Schedule {
       for (let f = 0; f < fixturesEls.length; f++) {
         const fixtureEl = fixturesEls[f];
 
-        let scheduleName = await fixtureEl.$eval(".schedule-name", (node) =>
-          node.textContent?.split(",")
-        );
+        let scheduleName = await fixtureEl.$eval(".schedule-name", (node) => {
+          let tc = node && node.textContent;
+          return tc && tc.split(",");
+        });
 
         let team_names = scheduleName ? scheduleName[0].split("vs") : null;
         let subtitle = scheduleName ? scheduleName[1].trim() : null;
@@ -39,10 +40,12 @@ export default class Schedule {
 
         fixtures.push({
           status: "SCHEDULED",
-          teams: team_names?.map((name, index) => ({
-            name: name.trim(),
-            logo_url: flags[index + 1],
-          })),
+          teams:
+            team_names &&
+            team_names.map((name, index) => ({
+              name: name.trim(),
+              logo_url: flags[index + 1],
+            })),
           subtitle,
           ...info,
         });
@@ -70,9 +73,11 @@ export default class Schedule {
 
         for (let s = 0; s < seriesEls.length; s++) {
           const seriesEl = seriesEls[s];
-          const title = (
-            await seriesEl.$eval(".schedule-date", (node) => node.textContent)
-          )?.trim();
+          let title = await seriesEl.$eval(
+            ".schedule-date",
+            (node) => node.textContent
+          );
+          title = title && title.trim();
           const fixtures = await this.getFixtures(seriesEl);
           series.push({
             title,
